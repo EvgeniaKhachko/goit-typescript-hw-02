@@ -1,0 +1,19 @@
+.gallery {
+    display: flex;
+    padding: 16px;
+    list-style: none;
+}
+
+.imageGallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.imageCard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+}

@@ -1,0 +1,11 @@
+.imageCard {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    height: 300px;
+    width: 400px;
+}
+
+.regularImage {
+    height: 260px;
+}

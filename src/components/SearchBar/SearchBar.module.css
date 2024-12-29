@@ -1,0 +1,41 @@
+.searchBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 64px;
+    background: rgb(16, 86, 216);
+    width: 100%;
+}
+
+.form {
+    width: 100vw;
+    margin: 0 auto;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px -1px,
+        rgba(0, 0, 0, 0.14) 0px 4px 5px 0px,
+        rgba(0, 0, 0, 0.12) 0px 1px 10px 0px;
+}
+
+.button {
+    width: 43px;
+    height: 38px;
+    position: relative;
+    right: 444px;
+    top: 4px;
+    opacity: 0;
+
+}
+
+.input {
+    margin: 12px;
+    width: 424px;
+    height: 34px;
+    text-align: center;
+}
+
+.icon {
+    position: relative;
+    left: 35px;
+    top: 4px;
+}
