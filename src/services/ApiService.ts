@@ -23,8 +23,8 @@ interface UnsplashResponse {
 }
 
 export default class ApiService {
-  private searchQuery: string;
-  private page: number;
+  searchQuery: string;
+  page: number;
 
   constructor() {
     this.searchQuery = '';

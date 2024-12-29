@@ -1,63 +1,95 @@
 import { useState, useEffect } from "react";
 import React from "react";
-import ApiService from "./services/ApiService.js";
-import SearchBar from "./components/SearchBar/SearchBar.jsx";
-import ImageGallery from "./components/ImageGallery/ImageGallery.jsx";
-import Loader from "./components/Loader/Loader.jsx";
-import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn.jsx";
-import ImageModal from "./components/ImageModal/ImageModal.jsx";
+import ApiService from "./services/ApiService";
+import SearchBar from "./components/SearchBar/SearchBar";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import Loader from "./components/Loader/Loader";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "./components/ImageModal/ImageModal";
 import "./App.css";
 import toast, { Toaster } from "react-hot-toast";
 
+interface UnsplashImage {
+  id: string;
+  urls: {
+    small: string;
+    regular: string;
+    full: string;
+  };
+  description: string | null;
+  likes?: number;
+}
+
+interface Image {
+  id: string;
+  urls: {
+    small: string;
+    regular: string;
+    full: string;
+    thumb: string; 
+  };
+  likes: number; 
+  description: string | null;
+}
+
+
+interface ApiResponse {
+  results: UnsplashImage[];
+  total: number;
+}
+
 const imageService = new ApiService();
+
 function App() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [images, setImages] = useState([]);
-  const [error, setError] = useState(false);
-  const [galleryPage, setGalleryPage] = useState(1);
-  const [totalHits, setTotalHits] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [images, setImages] = useState<Image[]>([]);
+  const [error, setError] = useState<boolean>(false);
+  const [galleryPage, setGalleryPage] = useState<number>(1);
+  const [totalHits, setTotalHits] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!searchQuery) return;
-
-    const fetchGalleryItems = (query, page) => {
+  
+    const fetchGalleryItems = (query: string, page: number) => {
       setLoading(true);
-
+  
       imageService.query = query;
       imageService.page = page;
-
+  
       imageService
         .fetchPost()
-        .then((data) => {
-          console.log("data");
-          console.log(data);
+        .then((data: ApiResponse) => {
           const newData = data.results.map(
             ({ id, urls, likes, description }) => ({
               id,
-              urls,
-              likes,
+              urls: {
+                small: urls.small,
+                regular: urls.regular,
+                full: urls.full,
+                thumb: urls.small, 
+              },
+              likes: likes ?? 0, 
               description,
             })
           );
           setImages((prevImages) => [...prevImages, ...newData]);
           setTotalHits(data.total);
-
+  
           if (!data.total) {
             setError(true);
-
             return toast.error(
               "Sorry, there are no images matching your search query. Please try again."
             );
           }
-
+  
           if (page === 1) {
             toast.success(`Hooray! We found ${data.total} images.`);
           }
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           toast.error(error.message);
           setError(true);
           setImages([]);
@@ -66,11 +98,11 @@ function App() {
         })
         .finally(() => setLoading(false));
     };
-
+  
     fetchGalleryItems(searchQuery, galleryPage);
   }, [searchQuery, galleryPage]);
 
-  const handleSubmit = (searchQuery) => {
+  const handleSubmit = (searchQuery: string) => {
     setSearchQuery("");
     setImages([]);
     setTotalHits(0);
@@ -84,7 +116,7 @@ function App() {
     setGalleryPage((prevPage) => prevPage + 1);
   };
 
-  function openModal(image) {
+  function openModal(image: Image) {
     setSelectedImage(image);
     setIsOpen(true);
   }
@@ -98,16 +130,14 @@ function App() {
     <>
       <div>
         <SearchBar onSubmit={handleSubmit} />
-
         <ImageGallery images={images} openModal={openModal} />
         <ImageModal
           image={selectedImage}
           closeModal={closeModal}
           openModal={modalIsOpen}
         />
-
         {loading && <Loader />}
-        {0 < images.length && images.length < totalHits && (
+        {images.length > 0 && images.length < totalHits && (
           <LoadMoreBtn onClick={onLoadMore} />
         )}
       </div>
